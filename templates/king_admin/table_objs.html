@@ -1,0 +1,155 @@
+{% extends 'king_admin/table_index.html' %}
+{% load tags %}
+
+{% block container %}
+
+    <div class="panel panel-info " style="margin: 50px;width: auto ">
+        <div class="panel-heading">
+            <span class="panel-title">{% get_title_name admin_class%}</span>
+{#            {% if not admin_class.readonly_table %}#}
+                <a href="{{ request.path }}add/" class="pull-right">添加客户</a>
+    {#            <a href="{% url "table_obj_add" app_name table_name %}" class="pull-right">添加客户</a>#}
+{#            {% endif %}#}
+        </div>
+
+{#    {{ queryset }}#}
+        <form>
+        <div style="margin-left: 35px">
+                {% for filter_column in admin_class.list_filter %}
+                    {%build_filter_ele filter_column admin_class %}
+                {% endfor %}
+               <input class='btn btn-success' type="submit" value="过滤">
+        </div>
+        <div class="row" style="margin-left: 15px">
+
+            <div class="col-lg-3" >
+                <input class="form-control" type="search" name="_q" value='{{ search_text }}'  placeholder="search_by:{% for search_field in admin_class.search_fields %}{{ search_field }},{% endfor %}">
+            </div>
+            <div class="col-lg-2">
+                <input class='btn btn-success ' type="submit" value="搜索">
+            </div>
+        </div>
+        </form>
+
+        <div class="row" style="margin-left: 15px;margin-top: 10px">
+{#        ondubmit在点击submit时候触发#}
+            <form onsubmit="return ActionSubmit(this)" method="POST">
+            {% csrf_token %}
+                <div class="col-lg-2" >
+                    <select  id="action_list" name="action" class="form-control" >
+                        <option value="">........</option>
+                        {% for action in admin_class.action %}
+{#                                                        获取定制的名字，不然只用写{{ action }}#}
+                        <option value="{{ action }}">{% get_action_verbose_name admin_class action %}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-lg-1">
+                    <button type="submit" class="btn" >Go</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="panel-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th style="width: 35px"> <input  type="checkbox" onclick="CheckAllToggle(this)"></th>
+
+                        {% for column in admin_class.list_display %}
+                       {# column就是每个字段的字符串#}
+                            {% build_table_header_column column orderby_key admin_class search_text%}
+
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+
+                            {% for obj in queryset %}
+                      <tr>
+                          <td><input tag="obj_checkbox" type="checkbox" value="{{ obj.id }}"></td>
+                          {% build_table_row request obj admin_class %}
+                      </tr>
+                        {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+{#                        拿到总数据量#}
+                        <td></td>
+                        <td>总计：{{ queryset.paginator.count }}条</td>
+                    </tr>
+                </tfoot>
+            </table>
+
+{#     ···············   分页··········#}
+
+             <ul class="pagination">
+                {% if queryset.has_previous %}
+                    <li ><a href="?_page=1
+{% get_message admin_class %}{% get_previous_orderby  previous_orderby%}{% get_search search_text %}">&laquo; 首页</a></li>
+                    <li ><a href="?_page={{ queryset.previous_page_number }}{% get_message admin_class %}
+{% get_previous_orderby  previous_orderby%}{% get_search search_text %}">上一页</a></li>
+                {% endif %}
+
+
+{#                    {% render_page_btn queryset admin_class%}#}
+                    {% render_dot queryset admin_class previous_orderby search_text%}
+
+
+                {% if queryset.has_next %}
+                    <li ><a href="?_page={{ queryset.next_page_number }}{% get_message admin_class %}
+{% get_previous_orderby  previous_orderby%}{% get_search search_text %}">下一页</a></li>
+                    <li ><a href="?_page={{ queryset.paginator.num_pages }}{% get_message admin_class %}
+{% get_previous_orderby  previous_orderby%}{% get_search search_text %}">尾页</a></li>
+                {% endif %}
+
+                <span class="current">
+{#                    当前页码： {{ queryset.number }} 总页码： {{ queryset.paginator.num_pages }}.#}
+                </span>
+
+            </ul>
+
+        </div>
+    </div>
+<script>
+function CheckAllToggle(ele) {
+    {#判断是否已点击checked#}
+    if($(ele).prop('checked')){
+        {#如果点击了，把tag标签的input设为已选checked#}
+        $('input[tag=obj_checkbox]').prop('checked',true);
+        {#else，设为false#}
+    }else($('input[tag=obj_checkbox]').prop('checked',false))
+
+}
+function ActionSubmit(form_ele) {
+     var selected_ids=[];
+     {#input[tag='obj_checkbox']:checked取得勾选了选项id#}
+     $("input[tag='obj_checkbox']:checked").each(function () {
+            {#["20", "18", "11"]#}
+            selected_ids.push($(this).val())
+     });
+    var selected_action=$('#action_list').val();
+    console.log(selected_ids);
+    console.log(selected_action);
+    if (selected_ids.length==0){
+        alert('no object got selected!');
+        return
+    }
+    if(!selected_action){
+        alert('No action got selected')
+    }
+    {#拼接一个input框返回#}
+    var selected_ids_ele = "<input  name='selected_ids' type='hidden' value='" + selected_ids.toString() + "' >";
+    $(form_ele).append(selected_ids_ele);
+        //remove all disabled attrs
+    $("this").find("[disabled]").removeAttr("disabled") ;
+{#return true就会提交，return false就不会提交#}
+    return true;
+}
+</script>
+
+
+{% endblock %}
+
+

@@ -1,0 +1,18 @@
+{% extends 'king_admin/table_index.html' %}
+{% block container %}
+<div style="margin: 210px 440px">
+    <h3 >是否删除数据，及其相关联的数据</h3>
+        <form method="post" style="margin: 30px 290px">
+        {% csrf_token %}
+
+        <input type="hidden" name="delete_confir" value="yes">
+    {#        views有判断post请求带selected_id数据没，没带数据会报错，点击确认删除是第二次post请求，且没带数据#}
+    {#        所以我们自己加个隐藏的标签，加入数据{{ selected_ids }}，这里的数据是king_admin传来了#}
+        <input type="hidden" name="selected_ids" value="{{ selected_ids }}">
+    {#        同理第二次请求没带action，king_admin传来#}
+        <input type="hidden" name="action" value="{{ action }}">
+       <input class='btn btn-danger' type="submit" value="确认删除">
+       <a class="btn btn-info" href="{% url "table_objs" app_name table_name %} ">No,Take me back</a>
+        </form>
+</div>
+{% endblock %}

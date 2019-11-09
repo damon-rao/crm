@@ -1,0 +1,39 @@
+{% extends 'index.html' %}
+
+{% block page_content %}
+    <form class="form-horizontal col-lg-7" method="post">{% csrf_token %}
+<div class="container col-lg-8 col-lg-offset-2">
+    <div class="panel panel-info">
+<div class="panel-heading">销售审批</div>
+             <span style="color:red">{{errors }}</span>
+    <div class="panel-body">
+
+            <div class="form-group">
+                <label  class="col-sm-3 control-label">客户</label>
+            <div class="col-sm-9">
+                {{ enroll_obj.customer }}
+            </div>
+            </div>
+
+            <div class="form-group">
+                <label  class="col-sm-3 control-label">所报课程</label>
+            <div class="col-sm-9">
+                {{ enroll_obj.enrolled_class }}
+            </div>
+            </div>
+
+            <div class="form-group">
+                <label  class="col-sm-3 control-label">缴纳金额</label>
+            <div class="col-sm-9">
+                <input type="text" name="amount" placeholder="不得低于500"/>
+            </div>
+            </div>
+    <input type="submit" class="btn btn-info" />
+    </div>
+    </div>
+</div>
+{#    <a href="{%url 'enrolled_rejection' enroll_id%}" type="button" class="btn btn-danger">驳回</a>#}
+
+</form>
+
+{% endblock %}

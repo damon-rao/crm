@@ -1,0 +1,39 @@
+{% extends 'index.html' %}
+{% load stu_tags %}
+{% block page_content %}
+
+    <div class="panel panel-default">
+  <div class="panel-heading">学生首页</div>
+  <div class="panel-body">
+{{ request.user.stu_account }}
+
+      <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>课程名称</th>
+                <th>班级</th>
+                <th>开课日期</th>
+                <th>结课日期</th>
+                <th>课程进度</th>
+                <th>我的成绩</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% for enroll_obj in request.user.stu_account.enrollment_set.all %}
+                <td>{{ enroll_obj.enrolled_class.course }}</td>
+                <td>s{{ enroll_obj.enrolled_class.semester }}</td>
+                <td>{{ enroll_obj.enrolled_class.start_date }}</td>
+                <td>{{ enroll_obj.enrolled_class.send_date }}</td>
+                <td>已上了{{ enroll_obj.enrolled_class.courserecord_set.all.count }}课</td>
+                <td>{% get_score enroll_obj request.user.stu_account as score_data%}
+                    {{ score_data.score_sum }}
+                </td>
+                    <td>{{ studyrecord.get_score_display}}</td>
+                {% endfor %}
+            </tr>
+        </tbody>
+      </table>
+  </div>
+</div>
+{% endblock %}

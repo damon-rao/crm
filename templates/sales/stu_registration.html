@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load crm_tags %}
+{% block body %}
+
+<div class="container col-lg-8 col-lg-offset-2">
+    <div class="panel panel-info">
+<div class="panel-heading">学院注册</div>
+        {% if status != 1 %}
+<form class="form-horizontal" onsubmit="return RegisterFormCheck()" method="post">{% csrf_token %}
+
+         <span style="color:red">{{ customer_form.errors }}</span>
+    <div class="panel-body">
+
+        {% for field in customer_form  %}
+            <div class="form-group">
+                <label  class="col-sm-2 control-label">{{ field.label }}</label>
+            <div class="col-sm-9">
+                {{ field }}
+            </div>
+            </div>
+        {% endfor %}
+            <div class="form-group">
+                <label  class="col-sm-2 control-label">课程信息</label>
+            <div class="col-sm-9">
+                {{ enroll_obj.enrolled_class}}
+            </div>
+            </div>
+
+            <div class="form-group">
+                <label  class="col-sm-2 control-label">开课日期</label>
+            <div class="col-sm-9">
+                {{ enroll_obj.enrolled_class.start_date}}
+            </div>
+            </div>
+
+            <div class="form-group">
+                <label  class="col-sm-2 control-label">费用</label>
+            <div class="col-sm-9">
+                {{ enroll_obj.enrolled_class.course.price}}
+            </div>
+            </div>
+
+            <div class="form-group">
+            <div class="col-sm-10 col-lg-offset-1">
+{#                pre标签，可以把文档远洋展示出来#}
+                <pre style="height: 200px;overflow: auto">{%render_enroll_contral  enroll_obj%}</pre>
+            </div>
+            </div>
+    <div>
+       <input type="checkbox" name="contract_agreed"/> 已阅读并同意以上条款
+    </div>
+    <div>
+       <input type="submit" value="提交" class="btn btn-info pull-right" >
+    </div>
+{% else %}<h1>您已註冊成功</h1>
+{% endif %}
+    </div>
+  </form>
+    {% if status != 1 %}
+    <p>请上传身份照正反面照片</p>
+        <form id="filedropzone" method="post" action="{{ request.path }}" class="dropzone dz-clickable" >{% csrf_token %}
+            <div class="dz-default dz-message">
+                <div class="dz-icon icon-wrap icon-circle icon-wrap-md">
+                    <i class="fa fa-cloud-upload fa-3x"></i>
+                </div>
+                <div>
+                    <p class="dz-text">把证件信息拖放到这里</p>
+                    <p class="text-muted">最多可上传2张照片</p>
+                </div>
+            </div>
+        </form>
+    {% endif %}
+
+    </div>
+</div>
+{% endblock %}
+
+{% block bottom-js %}
+
+<script>
+    function RegisterFormCheck(){
+        if(myDropzone.files.length<2){
+            alert('需要上传身份证正反两面，两个文件')
+            return false
+        }
+        {#检测是否被选中，有无checked#}
+      if ($('form :checkbox').prop('checked') ) {
+          {#去除disabled#}
+          $('form').find('[disabled]').removeAttr('disabled')
+          return true
+      }else {
+          alert('请先勾选确认再提交')
+          return false
+      }
+    }
+
+{#异步的上传图片#}
+    $(document).ready(function () {
+         Dropzone.options.filedropzone = {
+          url:"{{ request.path }}",
+          paramName: "file", // The name that will be used to transfer the file
+          maxFilesize: 1, // MB,
+          addRemoveLinks:true,
+          maxFiles:5,
+          uploadMultiple:true,
+          accept: function(file, done) {
+            if (file.name == "justinbieber.jpg") {
+              done("Naha, you don't.");
+            }
+            else { done(); }
+          }
+        };})
+
+{#验证是否有文件#}
+      Dropzone.autoDiscover = false;
+      myDropzone = new Dropzone("#filedropzone");
+      myDropzone.on("addedfile", function(file) {
+        /* Maybe display some more file information on your page */
+        console.log("-------",file)
+      });
+    console.log(myDropzone.files)
+</script>
+{% endblock %}

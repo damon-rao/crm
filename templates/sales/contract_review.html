@@ -1,0 +1,24 @@
+{% extends 'index.html' %}
+
+{% block page_content %}
+    {{ customer_form.as_table }}
+{#<div class="container col-lg-8 col-lg-offset-2">#}
+{#    <div class="panel panel-info">#}
+{#<div class="panel-heading">销售审批</div>#}
+{#             <span style="color:red">{{ customer_form.errors }}</span>#}
+{#    <div class="panel-body">#}
+{##}
+{#        {% for field in customer_form  %}#}
+{#            <div class="form-group">#}
+{#                <label  class="col-sm-2 control-label">{{ field.label }}</label>#}
+{#            <div class="col-sm-9">#}
+{#                {{ field }}#}
+{#            </div>#}
+{#            </div>#}
+{#        {% endfor %}#}
+{#    </div>#}
+{#    </div>#}
+{#</div>#}
+    <a href="{%url 'enrolled_rejection' enroll_id%}" type="button" class="btn btn-danger">驳回</a>
+    <a href="{%url 'payment' enroll_id%}" type="button" class="btn btn-info pull-right">下一步</a>
+{% endblock %}

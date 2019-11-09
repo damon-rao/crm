@@ -1,0 +1,32 @@
+{% extends 'king_admin/table_index.html' %}
+{% load tags %}
+
+{% block container %}
+    change table
+   <span style="color: red">{{ form_obj.errors }}</span>
+<form class="form-horizontal" method="post" onsubmit="return push()">
+{% csrf_token %}
+{% for field in form_obj %}
+  <div class="form-group" >
+    <label for="inputEmail3" class="col-sm-2 control-label">{{ field.label }}</label>
+    <div class="col-sm-6" >
+        <span>{{ field }}</span>
+        <span style="color: grey">{{ field.help_text }}</span>
+    </div>
+  </div>
+{% endfor %}
+{#{% if admin_class.readonly_table %}#}
+    <input class="btn btn-success  pull-right" type="submit" value="save" >
+    <a class="btn btn-info pull-right" href="{% url "table_objs" app_name table_name %}">back</a>
+    {% block obj_delete %}
+       <a class="btn btn-danger" href="{% url 'table_obj_delete' app_name table_name form_obj.instance.id %}">delete</a>
+    {% endblock %}
+{#{% endif %}#}
+</form>
+    <script>
+    function push(){
+     $("form").find("[disabled]").removeAttr("disabled")
+    }
+
+    </script>
+{% endblock %}
